@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 /**
  * taken from
  *
- * https://gist.github.com/svschannak/e79892f4fbc56df15bdb5496d0e67b85
+ * https://www.braemoor.co.uk/software/downloads/jsvat.zip
  * https://www.kmstewart.com/resources/check-vat-number
  * https://en.wikipedia.org/wiki/VAT_identification_number
  *
@@ -30,13 +30,13 @@ public class GBChecksumUtil {
 
     public boolean verifyStandard(String input) {
         try {
-            String firstDigit = input.substring(2, 3);
-            if (firstDigit.equals("0")) {
-                return false;
-            }
             String digits = input.substring(2, 9);
             int digitsInt = Integer.parseInt(digits);
             int checkDigits = Integer.parseInt(input.substring(9, 11));
+            // 0 VAT numbers disallowed!
+            if (digitsInt == 0) {
+                return false;
+            }
 
             int total = 0;
             for (int i = 0; i < 7; ++i) { // don't run digits.length, it may be 12 digits long (branch traders group in the end)
@@ -65,10 +65,6 @@ public class GBChecksumUtil {
             return false;
         }
 
-    }
-
-    public int getLastDigit(String digits) {
-        return digits.charAt(digits.length() - 1) - '0';
     }
 
     public int number(String digits, int i) {

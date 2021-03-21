@@ -1,6 +1,6 @@
 package de.mwillkomm.vatid.validator.vatid;
 
-import de.mwillkomm.vatid.util.Mod11_10Util;
+import de.mwillkomm.vatid.util.DEChecksumUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,11 +11,11 @@ public class DEVatValidator implements IVatIdValidator {
 
     private static final String[] SUPPORTED_COUNTRY_CODES = new String[]{ "DE" };
     private static final Pattern PATTERN = Pattern.compile("^DE\\d{9}$", Pattern.CASE_INSENSITIVE);
-    private final Mod11_10Util mod11_10Util;
+    private final DEChecksumUtil deChecksumUtil;
 
     @Autowired
-    public DEVatValidator(Mod11_10Util mod11_10Util) {
-        this.mod11_10Util = mod11_10Util;
+    public DEVatValidator(DEChecksumUtil deChecksumUtil) {
+        this.deChecksumUtil = deChecksumUtil;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class DEVatValidator implements IVatIdValidator {
     @Override
     public boolean isValidVatID(String input) {
         if (PATTERN.matcher(input).matches()) {
-            return mod11_10Util.verify(input);
+            return deChecksumUtil.verify(input);
         } else {
             return false;
         }

@@ -108,10 +108,18 @@ public class VatIdValidatorRestControllerTest {
 
     @Test
     public void testCallPostResourceWithGBId() throws Exception {
-        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", "GB562235987"))
+        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", "GB000000000"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("true")));
+                .andExpect(content().string(containsString("false")));
+    }
+
+    @Test
+    public void testCallPostResourceWithDEId() throws Exception {
+        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", "DE114189102"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("false")));
     }
 
     static Stream<String> validVatIds() {
