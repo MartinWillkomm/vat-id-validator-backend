@@ -8,18 +8,16 @@ public class FRChecksumUtil {
     /**
      * taken from
      * https://blog.dotnetframework.org/2020/08/26/convert-french-siret-siren-to-vat-tva-in-c/
-     *
-     * and
      * https://en.wikipedia.org/wiki/VAT_identification_number
      *
-     * but does not work with VAT IDs like
-     * FR K7 39985941 2
-     * FR 4Z 12345678 2
+     * this code does not work with vat ids like
+     * FR K7 39985941 2 (SIREN 399859412 is valid, but has different checksum: https://www.societe.com/societe/altea-expertise-comptable-399859412.html -> FR06399859412
+     * FR 4Z 12345678 2 (invalid, acc. eu commission)
      *
-     * which contain Letters as checksum letters (which are allowed as well).
+     * which contain Letters as checksum letters (which are allowed).
      * according to
-     * https://formvalidation.io/guide/validators/vat/french-vat-number
      *
+     * https://formvalidation.io/guide/validators/vat/french-vat-number
      *
      * The last 9 digits consist of 8 digits SIREN + 1 checksum.
      * The two letter between FR and the siren are the checksum checked here,
@@ -30,11 +28,11 @@ public class FRChecksumUtil {
      */
     public boolean verify(String input) {
         try {
+            long check = Long.parseLong(input.substring(2,4));
             String digits = input.substring(4, 13);
-            String check = input.substring(2,4);
-            Long total = Long.parseLong(digits);
+            long total = Long.parseLong(digits);
             total = (12 + 3* (total % 97)) % 97;
-            return check.equals(total.toString());
+            return total == check;
         } catch (Exception e) {
             return false;
         }
