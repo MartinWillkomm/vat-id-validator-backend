@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.containsString;
 @AutoConfigureMockMvc
 public class VatIdValidatorRestControllerTest {
 
+    public static final String VALIDATION_V_1_VATID = "/validation/v1/vatid/";
     @Autowired
     private MockMvc mockMvc;
 
@@ -30,18 +31,10 @@ public class VatIdValidatorRestControllerTest {
         Assertions.assertNotNull(mockMvc);
     }
 
-    @Test
-    public void testCallGreeting() throws Exception {
-        this.mockMvc.perform(get("/greeting"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("hello world!")));
-    }
-
     @ParameterizedTest
     @MethodSource("validVatIds")
     public void testCallGetResourceWithValidIds(String vatId) throws Exception {
-        this.mockMvc.perform(get("/api/validation/v1/vatid/" + vatId))
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + vatId))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("true")));
@@ -50,7 +43,7 @@ public class VatIdValidatorRestControllerTest {
     @ParameterizedTest
     @MethodSource("validVatIds")
     public void testCallPostResourceWithValidIds(String vatId) throws Exception {
-        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", vatId))
+        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", vatId))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("true")));
@@ -59,7 +52,7 @@ public class VatIdValidatorRestControllerTest {
     @ParameterizedTest
     @MethodSource("inValidVatIds")
     public void testCallGetResourceWithInvalidIds(String vatId) throws Exception {
-        this.mockMvc.perform(get("/api/validation/v1/vatid/" + vatId))
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + vatId))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("false")));
@@ -68,7 +61,7 @@ public class VatIdValidatorRestControllerTest {
     @ParameterizedTest
     @MethodSource("inValidVatIds")
     public void testCallPostResourceWithInvalidIds(String vatId) throws Exception {
-        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", vatId))
+        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", vatId))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("false")));
@@ -92,7 +85,7 @@ public class VatIdValidatorRestControllerTest {
      */
     @Test
     public void testCallPostResourceWithFRId() throws Exception {
-        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", "FR06399859412"))
+        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "FR06399859412"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("true")));
@@ -100,7 +93,7 @@ public class VatIdValidatorRestControllerTest {
 
     @Test
     public void testCallPostResourceWithNLId() throws Exception {
-        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", "NL004495445B01"))
+        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "NL004495445B01"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("true")));
@@ -108,7 +101,7 @@ public class VatIdValidatorRestControllerTest {
 
     @Test
     public void testCallPostResourceWithGBId() throws Exception {
-        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", "GB000000000"))
+        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "GB000000000"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("false")));
@@ -116,7 +109,7 @@ public class VatIdValidatorRestControllerTest {
 
     @Test
     public void testCallPostResourceWithDEId() throws Exception {
-        this.mockMvc.perform(post("/api/validation/v1/vatid/").param("value", "DE114189102"))
+        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "DE114189102"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("false")));

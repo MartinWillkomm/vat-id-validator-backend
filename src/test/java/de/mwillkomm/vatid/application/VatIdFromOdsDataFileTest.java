@@ -36,7 +36,7 @@ public class VatIdFromOdsDataFileTest {
     @ParameterizedTest
     @MethodSource("vatIdsFromOdsFile")
     public void testCallGetResourceWithValidIds(String vatId, Boolean expectedResult) throws Exception {
-        this.mockMvc.perform(get("/api/validation/v1/vatid/" + vatId))
+        this.mockMvc.perform(get("/validation/v1/vatid/" + vatId))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(expectedResult.toString())));
     }
