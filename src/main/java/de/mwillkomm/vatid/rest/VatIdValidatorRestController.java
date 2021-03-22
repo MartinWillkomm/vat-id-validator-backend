@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/validation/v1")
 public class VatIdValidatorRestController {
 
-    private static final String VERSION = "1";
-    private static final String BASE_URL = "/api/validation/v" + VERSION;
     private final VatValidatorService vatValidatorService;
 
     @Autowired
@@ -30,7 +29,7 @@ public class VatIdValidatorRestController {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            path = BASE_URL + "/vatid/{value}",
+            path = "/vatid/{value}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public Boolean isValidMappingGet(@PathVariable @NonNull String value) {
@@ -39,7 +38,7 @@ public class VatIdValidatorRestController {
 
     @RequestMapping(
             method = RequestMethod.POST,
-            path = BASE_URL + "/vatid",
+            path = "/vatid",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public Boolean isValidMappingPost(@RequestParam @NonNull String value) {
