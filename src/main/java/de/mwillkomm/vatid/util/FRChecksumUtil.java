@@ -3,7 +3,7 @@ package de.mwillkomm.vatid.util;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FRChecksumUtil {
+public class FRChecksumUtil extends CommonChecksumUtil{
 
     /**
      * taken from
@@ -37,9 +37,4 @@ public class FRChecksumUtil {
             return false;
         }
     }
-
-    public int getLastDigit(String digits) {
-        return digits.charAt(digits.length() - 1) - '0';
-    }
-
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * https://www.braemoor.co.uk/software/downloads/jsvat.zip
  */
 @Component
-public class DEChecksumUtil {
+public class DEChecksumUtil extends CommonChecksumUtil {
 
     private static Logger logger = LoggerFactory.getLogger(DEChecksumUtil.class);
 
@@ -32,12 +32,12 @@ public class DEChecksumUtil {
             int sum = 0;
             int prod = 10;
             for (int i = 0; i < digits.length() - 1; ++i) {
-                sum = (prod + number(digits, i)) % 10;
+                sum = (prod + getNumberAt(digits, i)) % 10;
                 if (sum == 0) {
                     sum = 10;
                 }
                 prod = (2 * sum) % 11;
-                logger.debug("digit: {}, sum: {}, prod: {} ", number(digits, i), sum, prod );
+                logger.debug("digit: {}, sum: {}, prod: {} ", getNumberAt(digits, i), sum, prod );
             }
             int expectedCheckDigit = diff(prod);
             logger.debug("expectedCheckDigit: {}", expectedCheckDigit);
@@ -60,7 +60,7 @@ public class DEChecksumUtil {
             String digits = input.substring(2);
             int t = 10;
             for (int i = 0; i < digits.length() - 1; ++i) {
-                t = (2 * f(t + number(digits, i))) % 11;
+                t = (2 * f(t + getNumberAt(digits, i))) % 11;
             }
             return (((t + getLastDigit(digits)) % 10) == 1);
         } catch (Exception e) {
@@ -78,13 +78,4 @@ public class DEChecksumUtil {
         int val = x % 10;
         return (val == 0) ? 10 : val;
     }
-
-    public int getLastDigit(String digits) {
-        return digits.charAt(digits.length() - 1) - '0';
-    }
-
-    public int number(String digits, int i) {
-        return digits.charAt(i) - '0';
-    }
-
 }

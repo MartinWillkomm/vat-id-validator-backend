@@ -112,7 +112,7 @@ public class VatIdValidatorRestControllerTest {
         this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "DE114189102"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("false")));
+                .andExpect(content().string(containsString("true")));
     }
 
     static Stream<String> validVatIds() {

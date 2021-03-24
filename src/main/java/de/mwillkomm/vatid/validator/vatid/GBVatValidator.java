@@ -28,7 +28,7 @@ public class GBVatValidator implements IVatIdValidator{
     @Override
     public boolean isValidVatID(String input) {
         if (PATTERN_GOUVERNMENT.matcher(input).matches()) {
-            return gbChecksumUtil.verifyGouvernmentDepartment(input);
+            return gbChecksumUtil.verifyGovernmentDepartment(input);
         }
         else if (PATTERN_HEALTHAUTHORITIES.matcher(input).matches()) {
             return gbChecksumUtil.verifyHealthAuthorities(input);

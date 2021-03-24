@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class GBChecksumUtil {
+public class GBChecksumUtil extends CommonChecksumUtil {
 
     private static final int[] gb_weight = new int[]{ 8, 7, 6, 5, 4, 3, 2};
 
-    public boolean verifyGouvernmentDepartment(String input) {
+    public boolean verifyGovernmentDepartment(String input) {
         int numberPart = Integer.parseInt(input.substring(4, 7));
         return numberPart < 500;
     }
@@ -40,7 +40,7 @@ public class GBChecksumUtil {
 
             int total = 0;
             for (int i = 0; i < 7; ++i) { // don't run digits.length, it may be 12 digits long (branch traders group in the end)
-                int cur_val = number(digits, i);
+                int cur_val = getNumberAt(digits, i);
                 total += cur_val * gb_weight[i];
             }
             int cd = total;
@@ -65,9 +65,5 @@ public class GBChecksumUtil {
             return false;
         }
 
-    }
-
-    public int number(String digits, int i) {
-        return digits.charAt(i) - '0';
     }
 }
