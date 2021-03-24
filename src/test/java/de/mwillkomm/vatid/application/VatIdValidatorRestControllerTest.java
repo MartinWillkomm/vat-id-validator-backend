@@ -1,5 +1,7 @@
 package de.mwillkomm.vatid.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.mwillkomm.vatid.json.ValidationResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,17 +14,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.containsString;
 
 @SpringBootTest(classes = VatIdValidatorApplication.class)
 @AutoConfigureMockMvc
 public class VatIdValidatorRestControllerTest {
 
     public static final String VALIDATION_V_1_VATID = "/validation/v1/vatid/";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -33,38 +33,20 @@ public class VatIdValidatorRestControllerTest {
 
     @ParameterizedTest
     @MethodSource("validVatIds")
-    public void testCallGetResourceWithValidIds(String vatId) throws Exception {
+    public void testCallResourceWithValidIds(String vatId) throws Exception {
+        ValidationResult expectedResult = new ValidationResult("validation successful", false, true, vatId);
         this.mockMvc.perform(get(VALIDATION_V_1_VATID + vatId))
-                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("true")));
-    }
-
-    @ParameterizedTest
-    @MethodSource("validVatIds")
-    public void testCallPostResourceWithValidIds(String vatId) throws Exception {
-        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", vatId))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("true")));
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
     }
 
     @ParameterizedTest
     @MethodSource("inValidVatIds")
-    public void testCallGetResourceWithInvalidIds(String vatId) throws Exception {
+    public void testCallResourceWithInvalidIds(String vatId) throws Exception {
+        ValidationResult expectedResult = new ValidationResult("validation successful", false, false, vatId);
         this.mockMvc.perform(get(VALIDATION_V_1_VATID + vatId))
-                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("false")));
-    }
-
-    @ParameterizedTest
-    @MethodSource("inValidVatIds")
-    public void testCallPostResourceWithInvalidIds(String vatId) throws Exception {
-        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", vatId))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("false")));
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
     }
 
     /**
@@ -84,40 +66,56 @@ public class VatIdValidatorRestControllerTest {
      * [2] https://www.societe.com/societe/altea-expertise-comptable-399859412.html
      */
     @Test
-    public void testCallPostResourceWithFRId() throws Exception {
-        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "FR06399859412"))
-                .andDo(print())
+    public void testCallResourceWithFRId() throws Exception {
+        ValidationResult expectedResult = new ValidationResult("validation successful", false, true, "FR06399859412");
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + "FR06399859412"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("true")));
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
     }
 
     @Test
-    public void testCallPostResourceWithNLId() throws Exception {
-        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "NL004495445B01"))
-                .andDo(print())
+    public void testCallResourceWithNLId() throws Exception {
+        ValidationResult expectedResult = new ValidationResult("validation successful", false, true, "NL004495445B01");
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + "NL004495445B01"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("true")));
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
     }
 
     @Test
-    public void testCallPostResourceWithGBId() throws Exception {
-        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "GB000000000"))
-                .andDo(print())
+    public void testCallResourceWithGBId() throws Exception {
+        ValidationResult expectedResult = new ValidationResult("validation successful", false, true, "FR06399859412");
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + "FR06399859412"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("false")));
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
     }
 
     @Test
-    public void testCallPostResourceWithDEId() throws Exception {
-        this.mockMvc.perform(post(VALIDATION_V_1_VATID).param("value", "DE114189102"))
-                .andDo(print())
+    public void testCallResourceWithDEId() throws Exception {
+        ValidationResult expectedResult = new ValidationResult("validation successful", false, true, "DE114189102");
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + "DE114189102"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("true")));
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
+    }
+
+    @Test
+    public void testCallResourceWithUnknownContryCode() throws Exception {
+        ValidationResult expectedResult = new ValidationResult("validation of country code SO currently not supported",true, null, "SOMEVALUE");
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + "SOMEVALUE"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
+    }
+
+    @Test
+    public void testCallResourceWithInvalidInput() throws Exception {
+        ValidationResult expectedResult = new ValidationResult("could not recognize country code",true, null, "1");
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
     }
 
     static Stream<String> validVatIds() {
         return Stream.of("NL004495445B01", "NL123456782B12",
-                "FR49348770561", "FR83404833048", "FR40303265045", "FR23334175221" /* TODO: not possible to verify with algorithm: "FRK7399859412", "FR4Z123456782" */,
+                "FR49348770561", "FR83404833048", "FR40303265045", "FR23334175221" /* TODO: not possible to validate with current algorithm: "FRK7399859412", "FR4Z123456782" */,
                 "ATU13585627",
                 "DK13585628", "DK54562519", "DK54562713",
                 "DE195936843", "DE398517849", "DE812398835", "DE136695976", "DE146268101", "DE118579535", "DE175718116", "DE131170111", "DE812738852", "DE811871646", "DE133500876",
@@ -131,8 +129,6 @@ public class VatIdValidatorRestControllerTest {
                 "DK13585627", "DK13585629",
                 "DE123456789", "DE987654321",
                 "GBGD501", "GBGB11A", "GBHA499", "GBHB501", "GB562235933",
-                "1", "SOMEVALUE", "DE99999999");
+                "DE99999999");
     }
-
-
 }

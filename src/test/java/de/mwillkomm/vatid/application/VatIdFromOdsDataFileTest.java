@@ -1,8 +1,10 @@
 package de.mwillkomm.vatid.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.miachm.sods.Range;
 import com.github.miachm.sods.Sheet;
 import com.github.miachm.sods.SpreadSheet;
+import de.mwillkomm.vatid.json.ValidationResult;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,16 +30,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VatIdFromOdsDataFileTest {
 
     private static final Path TEST_RESOURCES = Paths.get("src", "test", "resources");
+    private static final String VALIDATION_V_1_VATID = "/validation/v1/vatid/";
 
     @Autowired
     private MockMvc mockMvc;
 
     @ParameterizedTest
     @MethodSource("vatIdsFromOdsFile")
-    public void testCallGetResourceWithValidIds(String vatId, Boolean expectedResult) throws Exception {
-        this.mockMvc.perform(get("/validation/v1/vatid/" + vatId))
+    public void testCallGetResourceWithValidIds(String vatId, ValidationResult expectedResult) throws Exception {
+        this.mockMvc.perform(get(VALIDATION_V_1_VATID + vatId))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(expectedResult.toString())));
+                .andExpect(content().string(new ObjectMapper().writeValueAsString(expectedResult)));
     }
 
     /**
@@ -63,13 +65,17 @@ public class VatIdFromOdsDataFileTest {
                     break;
                 }
                 for (int i = 0; i < range.getNumRows(); i++) {
-                    String vatId = String.valueOf(range.getCell(i, 0).getValue());
-                    String expected = String.valueOf(range.getCell(i, 1).getValue());
-                    arguments.add(Arguments.of(cleanUp(vatId), cleanUp(expected).equals("valid") ? true : false));
+                    String vatId = cleanUp(String.valueOf(range.getCell(i, 0).getValue()));
+                    String expected = cleanUp(String.valueOf(range.getCell(i, 1).getValue()));
+                    arguments.add(Arguments.of(vatId, generateResult(vatId, expected)));
                 }
             }
         }
         return arguments.stream();
+    }
+
+    private static ValidationResult generateResult(String vatId, String expected) {
+        return new ValidationResult("validation successful", false, expected.equals("valid") ? true : false, vatId);
     }
 
     /**

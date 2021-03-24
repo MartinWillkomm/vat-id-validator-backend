@@ -1,11 +1,12 @@
 package de.mwillkomm.vatid.service;
 
+import de.mwillkomm.vatid.exception.InvalidInputException;
+import de.mwillkomm.vatid.exception.UnsupportedVATCountryCodeException;
 import de.mwillkomm.vatid.validator.vatid.IVatIdValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -33,18 +34,17 @@ public class VatValidatorService {
         list.forEach(item -> Arrays.stream(item.getSupportedCountryCodes()).forEach(countryCode -> validatorMap.put(countryCode, item)));
     }
 
-    public Boolean isValid(@NonNull String input) {
+    public Boolean isValid(@NonNull String input) throws Exception {
         if (input.length() < 2) {
-            return false;
+            throw new InvalidInputException("could not recognize country code");
         }
         String countryCode = input.substring(0,2).toUpperCase();
         IVatIdValidator iVatIdValidator = validatorMap.get(countryCode);
         if (iVatIdValidator != null) {
             return iVatIdValidator.isValidVatID(input);
-        }
-        else {
+        } else {
             logger.info("could not find a suitable validator for {}", countryCode);
-            return false;
+            throw new UnsupportedVATCountryCodeException(String.format("validation of country code %s currently not supported", countryCode));
         }
     }
 
