@@ -16,7 +16,7 @@ public class ATChecksumUtil extends CommonChecksumUtil {
                 quer += getChecksum(cur_val * at_weight[i]);
             }
             int rest = 96 - quer;
-            int last_digit = digits.charAt(digits.length() - 1) - '0';
+            int last_digit = getLastDigit(digits);
             return rest % 10 == last_digit;
         } catch (Exception e) {
             return false;

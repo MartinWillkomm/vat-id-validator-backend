@@ -4,7 +4,6 @@ import de.mwillkomm.vatid.json.ValidationResult;
 import de.mwillkomm.vatid.service.VatValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,29 +20,31 @@ public class VatIdValidatorRestController {
         this.vatValidatorService = vatValidatorService;
     }
 
+    /*
     @RequestMapping(
             method = RequestMethod.GET,
-            path = "/vatid2/{value}",
+            path = "/vatid/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Boolean isValidMappingBooleanGet(@PathVariable @NonNull String value) {
+    public Boolean isValidMappingBooleanGet(@PathVariable @NonNull String id) {
         try {
-            return vatValidatorService.isValid(value);
+            return vatValidatorService.isValid(id);
         } catch (Exception e) {
             return false;
         }
     }
+    */
 
     @RequestMapping(
             method = RequestMethod.GET,
-            path = "/vatid/{value}",
+            path = "/vatid/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ValidationResult isValidMappingValidationResultGet(@PathVariable @NonNull String value) {
+    public ValidationResult isValidMappingValidationResult(@PathVariable String id) {
         try {
-            return new ValidationResult("validation successful", false, vatValidatorService.isValid(value), value);
+            return new ValidationResult("validation successful", false, vatValidatorService.isValid(id), id);
         } catch (Exception e) {
-            return new ValidationResult(e.getMessage(), true, null, value);
+            return new ValidationResult(e.getMessage(), true, null, id);
         }
     }
 }

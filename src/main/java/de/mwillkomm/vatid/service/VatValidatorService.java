@@ -6,7 +6,6 @@ import de.mwillkomm.vatid.validator.vatid.IVatIdValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +33,7 @@ public class VatValidatorService {
         list.forEach(item -> Arrays.stream(item.getSupportedCountryCodes()).forEach(countryCode -> validatorMap.put(countryCode, item)));
     }
 
-    public Boolean isValid(@NonNull String input) throws Exception {
+    public Boolean isValid(String input) throws Exception {
         if (input.length() < 2) {
             throw new InvalidInputException("could not recognize country code");
         }

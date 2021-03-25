@@ -50,5 +50,13 @@ public class ValidationResult {
         this.input = input;
     }
 
-
+    @Override
+    public String toString() {
+        return "ValidationResult{" +
+                "message='" + message + '\'' +
+                ", errorOccurred=" + errorOccurred +
+                ", result=" + result +
+                ", input='" + input + '\'' +
+                '}';
+    }
 }

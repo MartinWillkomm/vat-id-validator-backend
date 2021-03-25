@@ -17,7 +17,7 @@ public class DEChecksumUtil extends CommonChecksumUtil {
 
     /**
      * this is my own implementation, but it produces the same
-     * result as the one taken from github/breamoor.
+     * result as the one taken from github (down below) and breamoor's in JS.
      *
      * which is somehow wrong, because braemoor's test data claims to
      * be validated correctly, but it fails in my case with some german vat ids.
@@ -40,7 +40,6 @@ public class DEChecksumUtil extends CommonChecksumUtil {
                 logger.debug("digit: {}, sum: {}, prod: {} ", getNumberAt(digits, i), sum, prod );
             }
             int expectedCheckDigit = diff(prod);
-            logger.debug("expectedCheckDigit: {}", expectedCheckDigit);
             return expectedCheckDigit == checkDigit;
         } catch (Exception e) {
             return false;
